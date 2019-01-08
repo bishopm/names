@@ -18,6 +18,15 @@ module.exports = function (ctx) {
     ],
     supportIE: false,
     build: {
+      env: ctx.dev
+        ? { // so on dev we'll have
+          API: JSON.stringify('http://localhost/churchnet/public/api'),
+          VERSION: version
+        }
+        : { // and on build (production):
+          API: JSON.stringify('https://church.net.za/api'),
+          VERSION: version
+        },
       scopeHoisting: true,
       // vueRouterMode: 'history',
       // vueCompiler: true,
@@ -44,8 +53,11 @@ module.exports = function (ctx) {
         'QLayout',
         'QLayoutHeader',
         'QLayoutDrawer',
-        'QPageContainer',
         'QPage',
+        'QPageContainer',
+        'QPageSticky',          
+        'QSearch',
+        'QSelect',
         'QToolbar',
         'QToolbarTitle',
         'QBtn',
