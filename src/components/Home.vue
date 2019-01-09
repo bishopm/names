@@ -28,8 +28,8 @@
       </q-item>
     </q-list>
     <div v-if="addnew">
-      <q-list>
-        <q-item v-for="member in newhousehold" :key="member">
+      <q-list class="no-border text-center">
+        <q-item v-for="(member, ndx) in newhousehold" :key="ndx" class="text-center">
           {{member.firstname}} {{member.surname}}
         </q-item>
       </q-list>
@@ -48,8 +48,19 @@
           <q-input float-label="Cellphone (optional)" v-model="newindiv.cellphone" @blur="$v.newindiv.cellphone.$touch()" :error="$v.newindiv.cellphone.$error" />
         </q-field>
       </div>
+      <div class="q-mx-md">
+        <q-field :error="$v.newindiv.sex.$error" error-label="Please choose male or female" class="text-center">
+          <q-btn-toggle v-model="newindiv.memberstatus" toggle-color="primary" :options="[{label: 'Adult', value: 'non-member'},
+            {label: 'Child', value: 'child'}, {label: 'Youth', value: 'youth'}]"/>
+        </q-field>
+      </div>
+      <div class="q-mx-md">
+        <q-field :error="$v.newindiv.sex.$error" error-label="Please choose male or female" class="text-center">
+          <q-radio @input="another" v-model="newindiv.sex" val="female" label="Female" />
+          <q-radio @input="another" class="q-ml-md" v-model="newindiv.sex" val="male" label="Male" />
+        </q-field>
+      </div>
       <div class="q-ma-lg text-center">
-        <q-btn color="secondary" @click="another">Add another</q-btn>
         <q-btn class="q-ml-md" color="primary" @click="submit">OK</q-btn>
         <q-btn class="q-ml-md" color="black" @click="$router.back()">Cancel</q-btn>
       </div>
@@ -71,7 +82,8 @@ export default {
         firstname: '',
         surname: '',
         cellphone: '',
-        sex: 'female'
+        memberstatus: 'non-member',
+        sex: ''
       },
       newhousehold: []
     }
@@ -80,7 +92,8 @@ export default {
     newindiv: {
       surname: { required, minLength: minLength(2) },
       firstname: { required, minLength: minLength(2) },
-      cellphone: { numeric }
+      cellphone: { numeric },
+      sex: { required }
     }
   },
   methods: {
@@ -119,6 +132,7 @@ export default {
       this.newhousehold.push({ firstname: this.newindiv.firstname, surname: this.newindiv.surname, cellphone: this.newindiv.surname, sex: this.newindiv.sex })
       this.newindiv.firstname = ''
       this.newindiv.cellphone = ''
+      this.newindiv.sex = ''
     },
     showfamily (household) {
       this.family = household.individuals
