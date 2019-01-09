@@ -1,20 +1,22 @@
 // Configuration for your app
+var version = JSON.stringify('0.1')
 
 module.exports = function (ctx) {
   return {
     // app plugins (/src/plugins)
     plugins: [
-      'axios'
+      'axios',
+      'vuelidate'
     ],
     css: [
       'app.styl'
     ],
     extras: [
       ctx.theme.mat ? 'roboto-font' : null,
-      'material-icons' // optional, you are not bound to it
+      // 'material-icons' // optional, you are not bound to it
       // 'ionicons',
       // 'mdi',
-      // 'fontawesome'
+      'fontawesome'
     ],
     supportIE: false,
     build: {
@@ -50,12 +52,15 @@ module.exports = function (ctx) {
     // framework: 'all' --- includes everything; for dev only!
     framework: {
       components: [
+        'QField',
+        'QInput',
         'QLayout',
         'QLayoutHeader',
         'QLayoutDrawer',
         'QPage',
         'QPageContainer',
-        'QPageSticky',          
+        'QPageSticky',
+        'QRadio',
         'QSearch',
         'QSelect',
         'QToolbar',
@@ -74,8 +79,13 @@ module.exports = function (ctx) {
       // Quasar plugins
       plugins: [
         'Notify'
-      ]
-      // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'
+      ],
+      config: {
+        notify: {
+          color: 'black'
+        }
+      },
+      iconSet: 'fontawesome'
       // i18n: 'de' // Quasar language
     },
     // animations: 'all' --- includes all animations
