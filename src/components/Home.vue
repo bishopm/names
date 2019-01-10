@@ -21,18 +21,19 @@
     <q-list class="no-border">
       <q-search no-ripple id="searchbox" ref="search" @input="searchdb" class="q-ma-md" v-model="search" placeholder="search by name or cellphone" />
       <div class="q-ma-md text-center" v-if="search.length">
-        <q-btn color="primary" @click="shownew">Don't see your name below? Add a new name</q-btn>
+        <q-btn color="primary" @click="$router.push('addnew')">Don't see your name below? Add a new name</q-btn>
       </div>
       <q-item v-for="household in households" :key="household.id" @click.native="showfamily(household)" class="cursor-pointer">
         {{household.addressee}}
       </q-item>
     </q-list>
-    <div v-if="addnew">
-      <q-list class="no-border text-center">
-        <q-item v-for="(member, ndx) in newhousehold" :key="ndx" class="text-center">
-          {{member.firstname}} {{member.surname}}
-        </q-item>
-      </q-list>
+    <q-list class="no-border text-center">
+      <q-item v-for="(member, ndx) in newhousehold" :key="ndx" class="text-center">
+        {{member.firstname}} {{member.surname}}
+      </q-item>
+    </q-list>
+    <q-modal minimized v-model="addnewmodal" content-css="padding: 50px">
+      <h4>Add a new person</h4>
       <div class="q-mx-md">
         <q-field :error="$v.newindiv.firstname.$error" error-label="The firstname field is required">
           <q-input float-label="First name" v-model="newindiv.firstname" @blur="$v.newindiv.firstname.$touch()" :error="$v.newindiv.firstname.$error" />
@@ -56,15 +57,15 @@
       </div>
       <div class="q-mx-md">
         <q-field :error="$v.newindiv.sex.$error" error-label="Please choose male or female" class="text-center">
-          <q-radio @input="another" v-model="newindiv.sex" val="female" label="Female" />
-          <q-radio @input="another" class="q-ml-md" v-model="newindiv.sex" val="male" label="Male" />
+          <q-radio v-model="newindiv.sex" val="female" label="Female" />
+          <q-radio class="q-ml-md" v-model="newindiv.sex" val="male" label="Male" />
         </q-field>
       </div>
       <div class="q-ma-lg text-center">
         <q-btn class="q-ml-md" color="primary" @click="submit">OK</q-btn>
-        <q-btn class="q-ml-md" color="black" @click="$router.back()">Cancel</q-btn>
+        <q-btn class="q-ml-md" color="black" @click="addnewmodal = false">Cancel</q-btn>
       </div>
-    </div>
+    </q-modal>
   </div>
 </template>
 
@@ -78,12 +79,13 @@ export default {
       households: [],
       search: '',
       addnew: false,
+      addnewmodal: false,
       newindiv: {
         firstname: '',
         surname: '',
         cellphone: '',
         memberstatus: 'non-member',
-        sex: ''
+        sex: 'female'
       },
       newhousehold: []
     }
@@ -102,6 +104,7 @@ export default {
     },
     shownew () {
       this.addnew = true
+      this.addnewmodal = true
       this.households = []
     },
     searchdb () {
@@ -126,13 +129,11 @@ export default {
       }
     },
     submit () {
-      console.log('submitting')
-    },
-    another () {
       this.newhousehold.push({ firstname: this.newindiv.firstname, surname: this.newindiv.surname, cellphone: this.newindiv.surname, sex: this.newindiv.sex })
       this.newindiv.firstname = ''
       this.newindiv.cellphone = ''
       this.newindiv.sex = ''
+      this.addnewmodal = false
     },
     showfamily (household) {
       this.family = household.individuals
@@ -183,5 +184,9 @@ export default {
 }
 .q-item, .caption {
   font-size: 125%;
+}
+h4 {
+  margin-top: 0px;
+  text-align: center;
 }
 </style>
