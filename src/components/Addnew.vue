@@ -1,42 +1,46 @@
 <template>
   <div class="q-ma-md text-center">
-    <p class="q-ma-md caption">Add a new household or individual</p>
+    <p class="q-ma-md caption">Add new names</p>
     <q-table :data="data" :columns="columns" row-key="firstname" hide-bottom>
       <q-tr slot="body" slot-scope="props" :props="props">
-        <q-td key="firstname" :props="props">
+        <q-td class="nameinput" key="firstname" :props="props">
           {{ props.row.firstname }}
           <q-popup-edit v-model="props.row.firstname">
             <q-field count>
-              <q-input @blur="checkrow" v-model="props.row.firstname" />
+              <q-input @blur="checkrow('f')" v-model="props.row.firstname" />
             </q-field>
           </q-popup-edit>
         </q-td>
-        <q-td key="surname" :props="props">
+        <q-td class="nameinput" key="surname" :props="props">
           {{ props.row.surname }}
-          <q-popup-edit v-model="props.row.surname" title="Update surname" buttons>
-            <q-input v-model="props.row.surname" />
+          <q-popup-edit v-model="props.row.surname">
+            <q-input @blur="checkrow('s')" v-model="props.row.surname" />
           </q-popup-edit>
         </q-td>
-        <q-td key="sex" :props="props">
+        <q-td class="nameinput" key="sex" :props="props">
           {{ props.row.sex }}
-          <q-popup-edit v-model="props.row.sex" title="Update sex" buttons>
+          <q-popup-edit v-model="props.row.sex">
             <q-select v-model="props.row.sex" :options="[{ label: 'female', value: 'female' }, { label: 'male', value: 'male' }]"/>
           </q-popup-edit>
         </q-td>
-        <q-td key="cellphone" :props="props">
+        <q-td class="nameinput" key="cellphone" :props="props">
           {{ props.row.cellphone }}
-          <q-popup-edit v-model="props.row.cellphone" title="Update cellphone" buttons>
+          <q-popup-edit v-model="props.row.cellphone">
             <q-input v-model="props.row.cellphone" />
           </q-popup-edit>
         </q-td>
-        <q-td key="memberstatus" :props="props">
+        <q-td class="nameinput" key="memberstatus" :props="props">
           {{ props.row.memberstatus }}
-          <q-popup-edit v-model="props.row.memberstatus" title="Update status" buttons>
+          <q-popup-edit v-model="props.row.memberstatus">
             <q-select v-model="props.row.memberstatus" :options="[{ label: 'Adult', value: 'adult' }, { label: 'Child', value: 'child' }, { label: 'Youth', value: 'youth' }]"/>
           </q-popup-edit>
         </q-td>
+        <q-td>
+          <q-btn v-if="data.length > 1" @click="deleterow(props.row)" icon="fa fa-times" size="sm" color="red" round></q-btn>
+        </q-td>
       </q-tr>
     </q-table>
+    <q-btn @click="update" class="q-ma-lg" color="primary">Back to labels</q-btn>
   </div>
 </template>
 
@@ -55,10 +59,43 @@ export default {
     }
   },
   methods: {
-    checkrow () {
-      if (this.data.slice(-1).firstname === '') {
-        //
+    checkrow (ff) {
+      if (((ff === 'f') && (this.data.length > 1)) || ((ff === 's') && (this.data.length === 1))) {
+        var lastrow = this.data.slice(-1)[0]
+        if (lastrow.firstname.length > 0) {
+          this.data.push({ firstname: '', surname: lastrow.surname, sex: 'female', cellphone: '', memberstatus: 'adult' })
+        }
       }
+    },
+    deleterow (row) {
+      if (this.data.length > 1) {
+        this.data.splice(row.__index, 1)
+      }
+      if ((this.data.length === 1) && (this.data[0].firstname.length > 0)) {
+        this.data.push({ firstname: '', surname: '', sex: 'female', cellphone: '', memberstatus: 'adult' })
+      }
+    },
+    update () {
+      for (var ndx in this.data) {
+        if (this.data[ndx].firstname === '') {
+          this.data.splice(ndx, 1)
+        } else if (this.data[ndx].surname === '') {
+          this.$q.notify('Missing surname')
+          break
+        }
+      }
+      this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.$store.state.token
+      this.$axios.post(process.env.API + '/households/newstickers',
+        {
+          indivs: this.data
+        })
+        .then(response => {
+          console.log(response.data)
+          // this.$router.push({ name: '/', params: { id: response.data.id } })
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
     }
   }
 }
@@ -71,5 +108,16 @@ h4 {
 }
 td.text-center.cursor-pointer, th.text-center {
   font-size: 115%;
+}
+.q-table td.nameinput {
+  padding:10px;
+  background-color: #dedede;
+  font-size: 115%;
+}
+.q-table {
+  border-spacing: 10px;
+}
+table {
+  border-spacing: 10px 10px;
 }
 </style>
