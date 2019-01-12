@@ -5,8 +5,9 @@ const routes = [
     component: () => import('layouts/MyLayout.vue'),
     children: [
       { name: 'home', path: '/', component: () => import('components/Home'), meta: {auth: true} },
-      { name: 'home', path: '/addnew', component: () => import('components/Addnew'), meta: {auth: true} },
-      { name: 'home', path: '/settings', component: () => import('components/Settings'), meta: {auth: true} }
+      { name: 'addnew', path: '/addnew', component: () => import('components/Addnew'), meta: {auth: true} },
+      { name: 'edithousehold', path: '/edithousehold/:id', component: () => import('components/EditHousehold'), meta: {auth: true} },
+      { name: 'settings', path: '/settings', component: () => import('components/Settings'), meta: {auth: true} }
     ]
   }
 ]

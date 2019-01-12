@@ -3,6 +3,7 @@
     <q-list v-if="family.length" class="no-border">
       <div class="text-center">
         <p class="q-ma-md caption">Who needs a name tag today?</p>
+        {{addressee}}
         <q-item v-for="member in family" :key="member.id" @click.native="togglesticker(member.id)" class="q-mx-md cursor-pointer text-center">
           <q-item-main>
             <span v-if="stickers.includes(member.id)">
@@ -14,15 +15,17 @@
             {{member.firstname}} {{member.surname}}
           </q-item-main>
         </q-item>
-        <q-btn @click="selectall" class="q-ma-md" icon="fa fa-check-circle" color="primary">&nbsp;Select all</q-btn>
-        <q-btn @click="print" class="q-ma-md" icon="fa fa-print" color="primary">&nbsp;Print</q-btn>
+        <q-btn @click="print" class="q-ma-md" size="lg" icon="fa fa-print" color="primary">&nbsp;Print labels</q-btn><br>
+        <q-btn @click="cancel" class="q-ma-sm" icon="fa fa-times" size="md" color="black">&nbsp;Cancel</q-btn>
+        <q-btn @click="$router.push({name: 'edithousehold', params: { id: family[0].household_id }})" size="md" class="q-ma-sm" icon="fa fa-plus" color="grey">&nbsp;Add</q-btn>
       </div>
     </q-list>
     <q-list class="no-border">
-      <q-search no-ripple id="searchbox" ref="search" @input="searchdb" class="q-ma-md" v-model="search" placeholder="search by name or cellphone" />
-      <div class="q-ma-md text-center" v-if="search.length">
-        <q-btn color="primary" @click="$router.push('addnew')">Don't see your name below? Add a new name</q-btn>
+      <q-search v-if="!family.length" no-ripple id="searchbox" autofocus @input="searchdb" class="q-ma-md" v-model="search" placeholder="search by name or cellphone" />
+      <div class="q-ma-md text-center" v-if="!family.length">
+        <q-btn color="primary" @click="$router.push('addnew')">Click here if we don't have your details</q-btn>
       </div>
+      <br>
       <q-item v-for="household in households" :key="household.id" @click.native="showfamily(household)" class="cursor-pointer">
         {{household.addressee}}
       </q-item>
@@ -77,6 +80,7 @@ export default {
       family: {},
       stickers: [],
       households: [],
+      addressee: '',
       search: '',
       addnew: false,
       addnewmodal: false,
@@ -99,9 +103,6 @@ export default {
     }
   },
   methods: {
-    addHousehold () {
-      this.$router.push({name: 'householdform', params: { action: 'add' }})
-    },
     shownew () {
       this.addnew = true
       this.addnewmodal = true
@@ -141,13 +142,6 @@ export default {
       this.households = []
       this.stickers = []
     },
-    selectall () {
-      for (var fndx in this.family) {
-        if (this.stickers.indexOf(this.family[fndx].id === -1)) {
-          this.stickers.push(this.family[fndx].id)
-        }
-      }
-    },
     togglesticker (id) {
       var ndx = this.stickers.indexOf(id)
       if (ndx === -1) {
@@ -160,10 +154,16 @@ export default {
       this.$q.notify('Your labels are ready!')
       this.family = []
       this.stickers = []
+    },
+    cancel () {
+      this.family = []
     }
   },
   mounted () {
     this.$store.commit('setToken', localStorage.getItem('CHURCHNET_Token'))
+    if (this.$route.params.fam) {
+      this.family = this.$route.params.fam
+    }
   }
 
 }

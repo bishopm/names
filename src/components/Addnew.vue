@@ -5,7 +5,7 @@
       <q-tr slot="body" slot-scope="props" :props="props">
         <q-td class="nameinput" key="firstname" :props="props">
           {{ props.row.firstname }}
-          <q-popup-edit v-model="props.row.firstname">
+          <q-popup-edit v-model="props.row.firstname" buttons>
             <q-field count>
               <q-input @blur="checkrow('f')" v-model="props.row.firstname" />
             </q-field>
@@ -13,7 +13,7 @@
         </q-td>
         <q-td class="nameinput" key="surname" :props="props">
           {{ props.row.surname }}
-          <q-popup-edit v-model="props.row.surname">
+          <q-popup-edit v-model="props.row.surname" buttons>
             <q-input @blur="checkrow('s')" v-model="props.row.surname" />
           </q-popup-edit>
         </q-td>
@@ -25,7 +25,7 @@
         </q-td>
         <q-td class="nameinput" key="cellphone" :props="props">
           {{ props.row.cellphone }}
-          <q-popup-edit v-model="props.row.cellphone">
+          <q-popup-edit v-model="props.row.cellphone" buttons>
             <q-input v-model="props.row.cellphone" />
           </q-popup-edit>
         </q-td>
@@ -40,7 +40,10 @@
         </q-td>
       </q-tr>
     </q-table>
-    <q-btn @click="update" class="q-ma-lg" color="primary">Back to labels</q-btn>
+    <p class="q-my-lg">
+      <q-btn @click="update" class="q-mr-md" color="primary">OK</q-btn>
+      <q-btn @click="$router.push('/')" color="black">Cancel</q-btn>
+    </p>
   </div>
 </template>
 
@@ -90,8 +93,7 @@ export default {
           indivs: this.data
         })
         .then(response => {
-          console.log(response.data)
-          // this.$router.push({ name: '/', params: { id: response.data.id } })
+          this.$router.push({ name: 'home', params: { fam: response.data } })
         })
         .catch(function (error) {
           console.log(error)
@@ -109,15 +111,20 @@ h4 {
 td.text-center.cursor-pointer, th.text-center {
   font-size: 115%;
 }
-.q-table td.nameinput {
+.q-table td {
+  border-style: none;
+}
+td.nameinput {
   padding:10px;
-  background-color: #dedede;
+  background-color: #f4fff4;
   font-size: 115%;
-}
-.q-table {
-  border-spacing: 10px;
-}
-table {
   border-spacing: 10px 10px;
+}
+table.q-table {
+  border-spacing: 10px;
+  border-collapse: separate;
+}
+.q-field-bottom {
+  display: none;
 }
 </style>
