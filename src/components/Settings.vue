@@ -15,8 +15,8 @@
         <q-select @input="chooseSociety" placeholder="Select a society" v-model="society" :options="societyOptions"/>
       </q-field>
       <q-field icon="fas fa-fw fa-chart-line" label="Track service attendance?" class="q-my-md">
-        <q-radio v-model="attendance" val="no" label="No" />
-        <q-radio class="q-ml-md" v-model="attendance" val="yes" label="Yes" />
+        <q-radio @input="storeattendance" v-model="attendance" val="no" label="No" />
+        <q-radio @input="storeattendance" class="q-ml-md" v-model="attendance" val="yes" label="Yes" />
       </q-field>
     </form>
     <div class="text-center" v-if="society > 0">
@@ -44,6 +44,9 @@ export default {
   methods: {
     goHome () {
       this.$router.push('/')
+    },
+    storeattendance () {
+      localStorage.setItem('NAMES_Attendance', this.attendance)
     },
     populateDistricts () {
       this.$axios.get(process.env.API + '/districts')

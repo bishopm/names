@@ -82,6 +82,7 @@ export default {
       households: [],
       addressee: '',
       search: '',
+      society: parseInt(localStorage.getItem('NAMES_Society')),
       addnew: false,
       addnewmodal: false,
       newindiv: {
@@ -116,7 +117,7 @@ export default {
         this.$axios.post(process.env.API + '/households/stickers',
           {
             search: this.search,
-            society: 667
+            society: this.society
           })
           .then(response => {
             this.households = response.data
@@ -151,9 +152,22 @@ export default {
       }
     },
     print () {
-      this.$q.notify('Your labels are ready!')
-      this.family = []
-      this.stickers = []
+      if (localStorage.getItem('NAMES_Attendance') === 'yes') {
+        this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.$store.state.token
+        this.$axios.post(process.env.API + '/attendances',
+          {
+            individuals: this.stickers,
+            society: this.society
+          })
+          .then(response => {
+            this.$q.notify('Your labels are ready!')
+            this.family = []
+            this.stickers = []
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+      }
     },
     cancel () {
       this.family = []

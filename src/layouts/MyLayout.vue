@@ -18,6 +18,11 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+    <q-layout-footer>
+      <q-toolbar class="justify-around">
+        Service time
+      </q-toolbar>
+    </q-layout-footer>
   </q-layout>
 </template>
 
@@ -26,7 +31,20 @@ export default {
   name: 'MyLayout',
   data () {
     return {
-      church: localStorage.getItem('NAMES_Societyname') + ' Methodist Church'
+      church: localStorage.getItem('NAMES_Societyname') + ' Methodist Church',
+      services: []
+    }
+  },
+  mounted () {
+    if (localStorage.getItem('NAMES_Society')) {
+      this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.$store.state.token
+      this.$axios.get(process.env.API + '/services/' + localStorage.getItem('NAMES_Society'))
+        .then(response => {
+          this.services = response.data
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
     }
   }
 }
