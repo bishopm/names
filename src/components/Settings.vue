@@ -14,6 +14,10 @@
       <q-field icon="fas fa-fw fa-map-marker-alt" label="Society" class="q-my-md">
         <q-select @input="chooseSociety" placeholder="Select a society" v-model="society" :options="societyOptions"/>
       </q-field>
+      <q-field icon="fas fa-fw fa-chart-line" label="Track service attendance?" class="q-my-md">
+        <q-radio v-model="attendance" val="no" label="No" />
+        <q-radio class="q-ml-md" v-model="attendance" val="yes" label="Yes" />
+      </q-field>
     </form>
     <div class="text-center" v-if="society > 0">
       <q-btn class="q-my-md" color="secondary" @click.native="goHome()">All done! Back to home page</q-btn>
@@ -30,6 +34,7 @@ export default {
       districtOptions: [],
       societyOptions: [],
       church: 'mcsa',
+      attendance: localStorage.getItem('NAMES_Attendance'),
       district: null,
       circuit: {},
       society: {},
