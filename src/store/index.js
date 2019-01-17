@@ -14,6 +14,9 @@ export default function (/* { ssrContext } */) {
       token: null
     },
     mutations: {
+      setNow (state, newnow) {
+        state.now = newnow
+      },
       setToken (state, newtoken) {
         state.token = newtoken
       }

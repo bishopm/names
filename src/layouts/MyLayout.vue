@@ -20,22 +20,33 @@
     </q-page-container>
     <q-layout-footer>
       <q-toolbar class="justify-around">
-        Service time
+        {{now}}
       </q-toolbar>
     </q-layout-footer>
   </q-layout>
 </template>
 
 <script>
+import { date } from 'quasar'
+
 export default {
   name: 'MyLayout',
   data () {
     return {
       church: localStorage.getItem('NAMES_Societyname') + ' Methodist Church',
-      services: []
+      services: [],
+      now: ''
     }
   },
   mounted () {
+    this.$store.commit('setNow', Date.now())
+    this.getnow()
+    this.$nextTick(function () {
+      window.setInterval(() => {
+        this.$store.commit('setNow', Date.now())
+        this.getnow()
+      }, 1000 * 60)
+    })
     if (localStorage.getItem('NAMES_Society')) {
       this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.$store.state.token
       this.$axios.get(process.env.API + '/services/' + localStorage.getItem('NAMES_Society'))
@@ -45,6 +56,11 @@ export default {
         .catch(function (error) {
           console.log(error)
         })
+    }
+  },
+  methods: {
+    getnow () {
+      this.now = date.formatDate(this.$store.state.now, 'd MMMM YYYY HH:mm')
     }
   }
 }

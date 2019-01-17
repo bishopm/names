@@ -92,7 +92,8 @@ export default {
         memberstatus: 'non-member',
         sex: 'female'
       },
-      newhousehold: []
+      newhousehold: [],
+      now: ''
     }
   },
   validations: {
