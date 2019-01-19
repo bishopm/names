@@ -11,7 +11,9 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const store = new Vuex.Store({
     state: {
-      token: null
+      token: null,
+      now: '',
+      service: ''
     },
     mutations: {
       setNow (state, newnow) {
@@ -19,6 +21,9 @@ export default function (/* { ssrContext } */) {
       },
       setToken (state, newtoken) {
         state.token = newtoken
+      },
+      setService (state, newservice) {
+        state.service = newservice
       }
     }
   })

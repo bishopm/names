@@ -158,7 +158,7 @@ export default {
         this.$axios.post(process.env.API + '/attendances',
           {
             individuals: this.stickers,
-            society: this.society
+            service_id: this.$store.state.service
           })
           .then(response => {
             this.$q.notify('Your labels are ready!')
