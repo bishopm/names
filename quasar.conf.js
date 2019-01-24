@@ -1,5 +1,5 @@
 // Configuration for your app
-var version = JSON.stringify('0.1')
+var version = JSON.stringify('0.1.1')
 
 module.exports = function (ctx) {
   return {
@@ -88,6 +88,7 @@ module.exports = function (ctx) {
       ],
       // Quasar plugins
       plugins: [
+        'Dialog',
         'Notify'
       ],
       config: {

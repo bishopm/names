@@ -61,7 +61,7 @@ export default {
       columns: [
         { name: 'firstname', required: true, label: 'First name', align: 'center', field: 'firstname' },
         { name: 'surname', required: true, label: 'Surname', align: 'center', field: 'surname' },
-        { name: 'sex', required: true, label: 'Sex', align: 'center', field: 'sex' },
+        { name: 'sex', required: true, label: 'Gender', align: 'center', field: 'sex' },
         { name: 'cellphone', required: false, label: 'Cellphone', align: 'center', field: 'cellphone' },
         { name: 'memberstatus', required: true, label: '', align: 'center', field: 'memberstatus' }
       ],
