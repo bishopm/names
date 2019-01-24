@@ -7,7 +7,7 @@
         </q-btn>
         <q-toolbar-title>
           <router-link to="/" class="text-white" style="text-decoration:none;">
-            Welcome to {{church}}
+            {{church}}
           </router-link>
           <div slot="subtitle">
             <router-link to="/" class="text-white" style="text-decoration:none;">
@@ -51,6 +51,23 @@ export default {
     }
   },
   mounted () {
+    if (localStorage.getItem('NAMES_Version')) {
+      if (localStorage.getItem('NAMES_Version') !== process.env.VERSION) {
+        this.$q.dialog({
+          title: 'New version available',
+          message: 'Click OK to restart the app and upgrade to version ' + process.env.VERSION,
+          ok: 'OK',
+          cancel: 'LATER'
+        }).then(() => {
+          localStorage.setItem('NAMES_Version', process.env.VERSION)
+          window.location.reload()
+        }).catch(() => {
+          console.log('Delaying upgrade')
+        })
+      }
+    } else {
+      localStorage.setItem('NAMES_Version', process.env.VERSION)
+    }
     this.dayofweek = date.formatDate(this.$store.state.now, 'd')
     this.$store.commit('setNow', Date.now())
     this.$nextTick(function () {

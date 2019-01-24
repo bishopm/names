@@ -4,32 +4,49 @@
       Update household
     </div>
     <div class="q-ma-md">
-      <q-field :error="$v.form.addressee.$error" error-label="The addressee field is required">
-        <q-input float-label="Addressee" v-model="form.addressee" @blur="$v.form.addressee.$touch()" :error="$v.form.addressee.$error" />
+      <q-field :error="$v.addressee.$error" error-label="The addressee field is required">
+        <q-input float-label="Household name" v-model="addressee" @blur="$v.addressee.$touch()" :error="$v.addressee.$error" />
       </q-field>
     </div>
-    <q-tabs color="secondary" no-pane-border align="justify" class="q-mt-md">
-      <q-tab v-for="(indiv, ndx) in household.individuals" :default="!ndx" :key="indiv.id" slot="title" :name="'tab' + indiv.id" :label="indiv.firstname"/>
-      <q-tab-pane v-for="indiv in household.individuals" :key="indiv.id" :name="'tab' + indiv.id">
-        <q-icon v-if="indiv.surname" name="fas fa-fw fa-user" color="primary"></q-icon> <b>{{indiv.title}} {{indiv.firstname}} {{indiv.surname}}</b>&nbsp;<q-btn color="primary" round size="sm" @click.native="editIndividual(indiv)">edit</q-btn><br>
-        <q-icon v-if="indiv.cellphone" name="fas fa-fw fa-mobile-alt" color="primary"></q-icon> {{indiv.cellphone}}<br>
-        <q-icon v-if="indiv.email" name="fas fa-fw fa-envelope" color="primary"></q-icon> {{indiv.email}}<br>
-        <q-icon v-if="indiv.birthdate" name="fas fa-fw fa-birthday-cake" color="primary"></q-icon> {{indiv.birthdate}}<br>
-        <q-icon v-if="indiv.memberstatus" name="fas fa-fw fa-check-square" color="primary"></q-icon> {{indiv.memberstatus}}<br>
-        <span v-if="indiv.memberstatus !== 'child'">
-          <q-btn class="q-ma-md" @click.native="giver(indiv.id)">Planned Giving</q-btn>
-        </span>
-        <br>
-      </q-tab-pane>
-      <q-tab key="0" slot="title" name="tabadd" icon="fas fa-fw fa-plus-circle"/>
-      <q-tab-pane name="tabadd">
-        <q-btn @click.native="addIndividual()">Add a new member to this household</q-btn>
-      </q-tab-pane>
-    </q-tabs>
+    <q-table :data="data" :columns="columns" row-key="firstname" hide-bottom>
+      <q-tr slot="body" slot-scope="props" :props="props">
+        <q-td class="nameinput" key="firstname" :props="props">
+          {{ props.row.firstname }}
+          <q-popup-edit v-model="props.row.firstname" buttons>
+            <q-field count>
+              <q-input @blur="checkrow('f')" v-model="props.row.firstname" />
+            </q-field>
+          </q-popup-edit>
+        </q-td>
+        <q-td class="nameinput" key="surname" :props="props">
+          {{ props.row.surname }}
+          <q-popup-edit v-model="props.row.surname" buttons>
+            <q-input @blur="checkrow('s')" v-model="props.row.surname" />
+          </q-popup-edit>
+        </q-td>
+        <q-td class="nameinput" key="sex" :props="props">
+          {{ props.row.sex }}
+          <q-popup-edit v-model="props.row.sex">
+            <q-select v-model="props.row.sex" :options="[{ label: 'female', value: 'female' }, { label: 'male', value: 'male' }]"/>
+          </q-popup-edit>
+        </q-td>
+        <q-td class="nameinput" key="cellphone" :props="props">
+          {{ props.row.cellphone }}
+          <q-popup-edit v-model="props.row.cellphone" buttons>
+            <q-input v-model="props.row.cellphone" />
+          </q-popup-edit>
+        </q-td>
+        <q-td class="nameinput" key="memberstatus" :props="props">
+          {{ props.row.memberstatus }}
+          <q-popup-edit v-model="props.row.memberstatus">
+            <q-select v-model="props.row.memberstatus" :options="[{ label: 'Adult', value: 'adult' }, { label: 'Child', value: 'child' }, { label: 'Youth', value: 'youth' }]"/>
+          </q-popup-edit>
+        </q-td>
+      </q-tr>
+    </q-table>
     <div class="q-ma-md text-center">
-      <q-btn color="primary" @click="submit">OK</q-btn>
+      <q-btn color="primary" @click="update">OK</q-btn>
       <q-btn class="q-ml-md" color="secondary" @click="$router.back()">Cancel</q-btn>
-      <q-btn class="q-ml-md" color="black">Delete</q-btn>
     </div>
   </div>
 </template>
@@ -40,35 +57,54 @@ import { required } from 'vuelidate/lib/validators'
 export default {
   data () {
     return {
-      form: {
-        addressee: ''
-      }
+      addressee: '',
+      columns: [
+        { name: 'firstname', required: true, label: 'First name', align: 'center', field: 'firstname' },
+        { name: 'surname', required: true, label: 'Surname', align: 'center', field: 'surname' },
+        { name: 'sex', required: true, label: 'Sex', align: 'center', field: 'sex' },
+        { name: 'cellphone', required: false, label: 'Cellphone', align: 'center', field: 'cellphone' },
+        { name: 'memberstatus', required: true, label: '', align: 'center', field: 'memberstatus' }
+      ],
+      data: []
     }
   },
   validations: {
-    form: {
-      addressee: { required }
-    }
+    addressee: { required }
   },
   methods: {
-    submit () {
-      this.$v.form.$touch()
-      if (this.$v.form.$error) {
+    checkrow (ff) {
+      if (((ff === 'f') && (this.data.length > 1)) || ((ff === 's') && (this.data.length === 1))) {
+        var lastrow = this.data.slice(-1)[0]
+        if (lastrow.firstname.length > 0) {
+          this.data.push({ firstname: '', surname: lastrow.surname, sex: 'female', cellphone: '', memberstatus: 'adult' })
+        }
+      }
+    },
+    update () {
+      this.$v.$touch()
+      if (this.$v.$error) {
         this.$q.notify('Please check for errors!')
       } else {
+        for (var ndx in this.data) {
+          if (this.data[ndx].firstname === '') {
+            this.data.splice(ndx, 1)
+          } else if (this.data[ndx].surname === '') {
+            this.$q.notify('Missing surname')
+            break
+          }
+        }
         this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.$store.state.token
-        this.$axios.post(process.env.API + '/households/' + this.form.id,
+        this.$axios.post(process.env.API + '/households/stickerupdate',
           {
-            addressee: this.form.addressee
+            id: this.$route.params.id,
+            addressee: this.addressee,
+            individuals: this.data
           })
           .then(response => {
-            this.$q.loading.hide()
-            this.$q.notify('Household updated')
-            this.$router.push({ name: 'household', params: { id: response.data.id } })
+            this.$router.push({ name: 'home', params: { fam: response.data } })
           })
           .catch(function (error) {
             console.log(error)
-            this.$q.loading.hide()
           })
       }
     }
@@ -77,16 +113,18 @@ export default {
     this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.$store.state.token
     this.$axios.get(process.env.API + '/households/' + this.$route.params.id)
       .then((response) => {
-        this.form = response.data
-        for (var ikey in this.form.individuals) {
+        for (var ikey in response.data.individuals) {
           var newitem = {
-            label: this.form.individuals[ikey].firstname,
-            value: this.form.individuals[ikey].id
+            id: response.data.individuals[ikey].id,
+            firstname: response.data.individuals[ikey].firstname,
+            surname: response.data.individuals[ikey].surname,
+            sex: response.data.individuals[ikey].sex,
+            cellphone: response.data.individuals[ikey].cellphone,
+            memberstatus: response.data.individuals[ikey].memberstatus
           }
-          if (this.form.individuals[ikey].cellphone) {
-            this.housecellOptions.push(newitem)
-          }
+          this.data.push(newitem)
         }
+        this.addressee = response.data.addressee
       })
       .catch(function (error) {
         console.log(error)

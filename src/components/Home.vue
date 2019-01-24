@@ -21,7 +21,9 @@
       </div>
     </q-list>
     <q-list class="no-border">
-      <q-search v-if="!family.length" no-ripple id="searchbox" autofocus @input="searchdb" class="q-ma-md" v-model="search" placeholder="search by name or cellphone" />
+      <q-search disable autocomplete=off v-if="!family.length" no-ripple id="searchbox" @input="searchdb" class="q-ma-md gt-xs" v-model="search" placeholder="search by name or cellphone" />
+      <q-search autocomplete=off v-if="!family.length" no-ripple id="searchbox" @input="searchdb" class="q-ma-md lt-sm" v-model="search" placeholder="search by name or cellphone" />
+      <keyboard class="gt-xs" v-if="!family.length" v-model="search" @input="searchdb" :layouts="['1234567890|qwertyuiop|asdfghjkl{❌:backspace}|zxcvbnm{space:space}']"></keyboard>
       <div class="q-ma-md text-center" v-if="!family.length">
         <q-btn color="primary" @click="$router.push('addnew')">Click here if we don't have your details</q-btn>
       </div>
@@ -74,6 +76,7 @@
 
 <script>
 import { required, minLength, numeric } from 'vuelidate/lib/validators'
+import keyboard from 'vue-keyboard'
 export default {
   data () {
     return {
@@ -96,6 +99,7 @@ export default {
       now: ''
     }
   },
+  components: { keyboard },
   validations: {
     newindiv: {
       surname: { required, minLength: minLength(2) },
@@ -175,7 +179,7 @@ export default {
     }
   },
   mounted () {
-    this.$store.commit('setToken', localStorage.getItem('CHURCHNET_Token'))
+    this.$store.commit('setToken', localStorage.getItem('NAMES_Token'))
     if (this.$route.params.fam) {
       this.family = this.$route.params.fam
     }
@@ -197,8 +201,18 @@ export default {
     font-size: 125%;
     line-height: 400%;
 }
+.vue-keyboard-row {
+  font-size: 150%;
+  padding-top: 10px;
+}
+.vue-keyboard-key {
+  margin-left:10px;
+  background-color: #f4fff4;
+  border: solid 1px #ddffdd;
+}
 .q-item, .caption {
   font-size: 125%;
+  font-weight: bold;
 }
 h4 {
   margin-top: 0px;
