@@ -77,6 +77,7 @@
 <script>
 import { required, minLength, numeric } from 'vuelidate/lib/validators'
 import keyboard from 'vue-keyboard'
+import printJS from 'print-js'
 export default {
   data () {
     return {
@@ -172,7 +173,10 @@ export default {
           .catch(function (error) {
             console.log(error)
           })
+      } else {
+
       }
+      printJS({printable: this.stickers, properties: ['id'], type: 'json'})
     },
     cancel () {
       this.family = []
