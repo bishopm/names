@@ -21,6 +21,7 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-    <engine name="android" spec="^7.1.4" />
     <plugin name="com.threescreens.cordova.plugin.brotherPrinter" spec="git+https://github.com/gordol/cordova-brother-label-printer.git" />
+    <engine name="android" spec="^7.1.4" />
+    <engine name="browser" spec="^5.0.4" />
 </widget>

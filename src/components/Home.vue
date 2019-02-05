@@ -4,9 +4,9 @@
       <div class="text-center">
         <p class="q-ma-md caption">Who needs a name tag today?</p>
         {{addressee}}
-        <q-item v-for="member in family" :key="member.id" @click.native="togglesticker(member.id)" class="q-mx-md cursor-pointer text-center">
+        <q-item v-for="member in family" :key="member.id" @click.native="togglesticker(member)" class="q-mx-md cursor-pointer text-center">
           <q-item-main>
-            <span v-if="stickers.includes(member.id)">
+            <span v-if="stickers.includes(member)">
               <q-icon color="green" name="fa fa-check"></q-icon>
             </span>
             <span v-else>
@@ -77,7 +77,7 @@
 <script>
 import { required, minLength, numeric } from 'vuelidate/lib/validators'
 import keyboard from 'vue-keyboard'
-import printJS from 'print-js'
+import jsPDF from 'jspdf'
 export default {
   data () {
     return {
@@ -89,6 +89,7 @@ export default {
       society: parseInt(localStorage.getItem('NAMES_Society')),
       addnew: false,
       addnewmodal: false,
+      pdf: '',
       newindiv: {
         firstname: '',
         surname: '',
@@ -149,10 +150,10 @@ export default {
       this.households = []
       this.stickers = []
     },
-    togglesticker (id) {
-      var ndx = this.stickers.indexOf(id)
+    togglesticker (indiv) {
+      var ndx = this.stickers.indexOf(indiv)
       if (ndx === -1) {
-        this.stickers.push(id)
+        this.stickers.push(indiv)
       } else {
         this.stickers.splice(ndx, 1)
       }
@@ -166,23 +167,44 @@ export default {
             service_id: this.$store.state.service
           })
           .then(response => {
-            this.$q.notify('Your labels are ready!')
-            this.family = []
-            this.stickers = []
+            this.printstickers()
           })
           .catch(function (error) {
             console.log(error)
           })
       } else {
-
+        this.printstickers()
       }
-      printJS({printable: this.stickers, properties: ['id'], type: 'json'})
+    },
+    printstickers () {
+      this.pdf = new jsPDF({
+        orientation: 'l',
+        unit: 'mm',
+        format: [62, 30]
+      })
+      for (var ikey in this.stickers) {
+        if (ikey > 0) {
+          this.pdf.addPage({
+            format: [62, 30],
+            orientation: 'l'
+          })
+        }
+        this.pdf.setFontSize(12)
+        this.pdf.text(this.stickers[ikey].firstname, 11, 5, {'align': 'center'})
+        this.pdf.setFontSize(9)
+        this.pdf.text(this.stickers[ikey].surname, 11, 9, {'align': 'center'})
+      }
+      cordova.plugins.brotherPrinter.sendUSBConfig(this.pdf.output())
+      this.$q.notify('Your labels are ready!')
+      this.family = []
+      this.stickers = []
     },
     cancel () {
       this.family = []
     }
   },
   mounted () {
+    localStorage.setItem('NAMES_Token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3RcL2NodXJjaG5ldFwvcHVibGljXC9hcGlcL2NodXJjaG5ldFwvbG9naW4iLCJpYXQiOjE1NDIyNzg0ODYsImV4cCI6MTU3MzgxNDQ4NiwibmJmIjoxNTQyMjc4NDg2LCJqdGkiOiJwMGp5djg2S3VYQmVJZ29IIiwic3ViIjoxLCJwcnYiOiJkODI2ZDcwNjNmN2ZhNzFiODg0ZWI2NjIwYWIxZTBkMTdhNGU0NzgwIn0.kSDURLc9IckhRHSRIn3dn-f7vwNYGxPOKLnw-fRfv1U')
     this.$store.commit('setToken', localStorage.getItem('NAMES_Token'))
     if (this.$route.params.fam) {
       this.family = this.$route.params.fam
