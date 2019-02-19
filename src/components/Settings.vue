@@ -14,6 +14,9 @@
       <q-field icon="fas fa-fw fa-map-marker-alt" label="Society" class="q-my-md">
         <q-select @input="chooseSociety" placeholder="Select a society" v-model="society" :options="societyOptions"/>
       </q-field>
+      <q-field icon="fas fa-fw fa-key" label="Token" class="q-my-md">
+        <q-input @input="setToken" v-model="token"/>
+      </q-field>
       <q-field icon="fas fa-fw fa-chart-line" label="Track service attendance?" class="q-my-md">
         <q-radio @input="storeattendance" v-model="attendance" val="no" label="No" />
         <q-radio @input="storeattendance" class="q-ml-md" v-model="attendance" val="yes" label="Yes" />
@@ -35,6 +38,7 @@ export default {
       societyOptions: [],
       church: 'mcsa',
       attendance: localStorage.getItem('NAMES_Attendance'),
+      token: this.$store.state.token,
       district: null,
       circuit: {},
       society: {},
@@ -47,6 +51,9 @@ export default {
     },
     storeattendance () {
       localStorage.setItem('NAMES_Attendance', this.attendance)
+    },
+    setToken () {
+      localStorage.setItem('NAMES_Token', this.token)
     },
     populateDistricts () {
       this.$axios.get(process.env.API + '/districts')

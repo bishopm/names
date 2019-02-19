@@ -121,10 +121,13 @@ export default {
         this.family = []
         this.addnew = false
         this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.$store.state.token
-        this.$axios.post(process.env.API + '/households/stickers',
+        this.$axios.post(process.env.API + '/householdstickers/stickers',
           {
             search: this.search,
-            society: this.society
+            society: this.society,
+            society_id: localStorage.getItem('NAMES_Society'),
+            accesstype: 'nametags',
+            token: this.$store.state.token
           })
           .then(response => {
             this.households = response.data
@@ -164,7 +167,10 @@ export default {
         this.$axios.post(process.env.API + '/attendances',
           {
             individuals: this.stickers,
-            service_id: this.$store.state.service
+            service_id: this.$store.state.service,
+            society_id: localStorage.getItem('NAMES_Society'),
+            accesstype: 'nametags',
+            token: this.$store.state.token
           })
           .then(response => {
             this.printstickers()
@@ -204,7 +210,6 @@ export default {
     }
   },
   mounted () {
-    localStorage.setItem('NAMES_Token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3RcL2NodXJjaG5ldFwvcHVibGljXC9hcGlcL2NodXJjaG5ldFwvbG9naW4iLCJpYXQiOjE1NDIyNzg0ODYsImV4cCI6MTU3MzgxNDQ4NiwibmJmIjoxNTQyMjc4NDg2LCJqdGkiOiJwMGp5djg2S3VYQmVJZ29IIiwic3ViIjoxLCJwcnYiOiJkODI2ZDcwNjNmN2ZhNzFiODg0ZWI2NjIwYWIxZTBkMTdhNGU0NzgwIn0.kSDURLc9IckhRHSRIn3dn-f7vwNYGxPOKLnw-fRfv1U')
     this.$store.commit('setToken', localStorage.getItem('NAMES_Token'))
     if (this.$route.params.fam) {
       this.family = this.$route.params.fam

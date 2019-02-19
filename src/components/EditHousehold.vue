@@ -94,11 +94,14 @@ export default {
           }
         }
         this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.$store.state.token
-        this.$axios.post(process.env.API + '/households/stickerupdate',
+        this.$axios.post(process.env.API + '/householdstickers/stickerupdate',
           {
             id: this.$route.params.id,
             addressee: this.addressee,
-            individuals: this.data
+            individuals: this.data,
+            society_id: localStorage.getItem('NAMES_Society'),
+            accesstype: 'nametags',
+            token: this.$store.state.token
           })
           .then(response => {
             this.$router.push({ name: 'home', params: { fam: response.data } })
@@ -111,7 +114,7 @@ export default {
   },
   mounted () {
     this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.$store.state.token
-    this.$axios.get(process.env.API + '/households/' + this.$route.params.id)
+    this.$axios.get(process.env.API + '/householdstickers/' + this.$route.params.id + '/' + localStorage.getItem('NAMES_Society') + '/nametags/' + localStorage.getItem('Names_Token'))
       .then((response) => {
         for (var ikey in response.data.individuals) {
           var newitem = {

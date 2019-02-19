@@ -88,9 +88,12 @@ export default {
         }
       }
       this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.$store.state.token
-      this.$axios.post(process.env.API + '/households/newstickers',
+      this.$axios.post(process.env.API + '/householdstickers/newstickers',
         {
-          indivs: this.data
+          indivs: this.data,
+          society_id: localStorage.getItem('NAMES_Society'),
+          accesstype: 'nametags',
+          token: this.$store.state.token
         })
         .then(response => {
           this.$router.push({ name: 'home', params: { fam: response.data } })
